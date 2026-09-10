@@ -24,7 +24,7 @@ DEFAULTS = {  # == authors' config/config.json
     "cell_type_rnn_moment": "lstm", "num_layers_rnn_moment": 1, "num_units_rnn_moment": [32],
     "num_layers_moment": 0, "hidden_dim_moment": [], "num_condition_moment": 8,
     "num_epochs_unc": 256, "num_epochs_moment": 64, "num_epochs": 1024, "sub_epoch": 4,
-    "individual_feature_dim": 46, "macro_feature_dim": 178, "ignore_epoch": 64, "print_freq": 64,
+    "individual_feature_dim": 46, "macro_feature_dim": 178, "ignore_epoch": 32, "print_freq": 64,   # ignoreEpoch=32: authors' notebook command
     # extensions (0 = off = pure replication)
     "turnover_penalty": 0.0, "sdf_hinge": 0.0,
 }
@@ -87,7 +87,8 @@ def main():
     W = ev.ensemble_weights(cfg, ckpts, bundles, device=args.device)
     splits = (tr, va, te); names = ('train', 'valid', 'test')
     res = {'config': cfg, 'n_seeds': len(ckpts), 'paper_reference_test': {
-        'SR_monthly': 0.75, 'SR_annual': 2.6, 'EV': 0.08, 'XS_R2': 0.23, 'note': 'GAN with hidden macro states, Table 1 of the paper'}}
+        'SR_monthly': 0.75, 'SR_annual': 2.6, 'EV': 0.08, 'XS_R2': 0.23,
+        'note': 'GAN with hidden macro states, Table 1 of the paper; the paper XS_R2 is the T_i-weighted one (notebook prints WXSR2) -> compare with XS_R2_weighted_beta'}}
     Wn, Fs = [], []
     for s, n, w in zip(splits, names, W):
         wn = ev.normalize_w(w, s.mask); F = ev.sdf_factor_from_w(wn, s.R, s.mask)
@@ -165,20 +166,22 @@ def make_plots(logdir, cfg, ckpts, splits, Fs, betas, bundles, device):
     ys = ev.yearly_sharpe(Fs[2], te.dates)
     plt.figure(figsize=(10, 3.5)); plt.bar(list(ys.keys()), list(ys.values())); plt.title('Test: annualised Sharpe by calendar year')
     plt.tight_layout(); plt.savefig(os.path.join(pd, 'sharpe_by_year_test.png'), dpi=150); plt.close()
-    # variable importance (finite-difference sensitivity of w, seed-0 best ckpt), authors' Fig. 5 style
+    # variable importance: authors' `_saveIndividualFeatureImportance` (finite difference, delta 1e-6, mean |dw| on the
+    # test window, raw w) averaged over the ensemble members as in `plotIndividualFeatureImportance`
     from dlap.model import SDFNet
-    ck = torch.load(ckpts[0], map_location=device, weights_only=False)
-    net = SDFNet(cfg).to(device); net.load_state_dict(ck['sdf_best_sharpe'] or ck['sdf_last']); net.eval()
-    b = bundles[2]
-    with torch.no_grad():
-        state = net.macro_state(b.macro_seq); w0 = net.weights(b.I, b.mask, state, b.t0)
-        imp = []
-        for j in range(tr.C):
-            I2 = b.I.clone(); I2[..., j] += 1e-4
-            imp.append(((net.weights(I2, b.mask, state, b.t0) - w0).abs().mean() / 1e-4).item())
+    b = bundles[2]; delta = 1e-6; imp = np.zeros(tr.C)
+    for p in ckpts:
+        ck = torch.load(p, map_location=device, weights_only=False)
+        net = SDFNet(cfg).to(device); net.load_state_dict(ck['sdf_best_sharpe'] or ck['sdf_last']); net.eval()
+        with torch.no_grad():
+            state = net.macro_state(b.macro_seq); w0 = net.weights(b.I, b.mask, state, b.t0)
+            for j in range(tr.C):
+                I2 = b.I.clone(); I2[..., j] += delta
+                imp[j] += ((net.weights(I2, b.mask, state, b.t0) - w0).abs().mean() / delta).item() / len(ckpts)
+    imp = list(imp)
     order = np.argsort(imp)[::-1]
     plt.figure(figsize=(10, 4)); plt.bar(range(tr.C), np.array(imp)[order]); plt.xticks(range(tr.C), [tr.char_names[i] for i in order], rotation=90, fontsize=7)
-    plt.title('Variable importance: avg |dw/dchar| on test (seed 0)'); plt.tight_layout(); plt.savefig(os.path.join(pd, 'variable_importance_test.png'), dpi=150); plt.close()
+    plt.title(f'Variable importance: avg |dw/dchar| on test ({len(ckpts)}-model average)'); plt.tight_layout(); plt.savefig(os.path.join(pd, 'variable_importance_test.png'), dpi=150); plt.close()
     json.dump({tr.char_names[i]: imp[i] for i in order}, open(os.path.join(logdir, 'variable_importance.json'), 'w'), indent=1)
 
 

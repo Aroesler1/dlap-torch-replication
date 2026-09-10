@@ -100,16 +100,20 @@ def macro_states(cfg, ckpt_path, bundle, device='cuda'):
 
 # ---------------------------------------------------------------- beta network --------------
 class BetaNet(nn.Module):
-    """Second-stage FFN from the authors' `create_RF_data.py` + `model_RtnFcst.py`: predict R_{t,i} F_t (x50)."""
+    """Second-stage FFN from the authors' `create_RF_data.py` + `model_RtnFcst.py` with `config_RF/config_RF_1.json`:
+    3 layers [32,16,8], keep 0.95, Adam 1e-3, 2048 epochs of one full-batch step (sub_epoch false), unweighted MSE,
+    characteristics only (macro_feature_dim 0), best-valid-loss checkpoint, 9 trials averaged.  Target: R_{t,i} F_t x 50."""
 
     def __init__(self, C, hidden=(32, 16, 8), keep=0.95):
         super().__init__()
+        from .model import init_tf_default_
         layers, d = [], C
         for h in hidden:
             layers += [nn.Linear(d, h), nn.ReLU(), nn.Dropout(1 - keep)]
             d = h
         layers.append(nn.Linear(d, 1))
         self.net = nn.Sequential(*layers)
+        init_tf_default_(self)
 
     def forward(self, x):
         return self.net(x).squeeze(-1)
@@ -120,6 +124,7 @@ def fit_beta(splits, F_by_split, epochs=2048, lr=1e-3, seeds=(0,), device='cuda'
     Train beta(I) to predict R*F*50 on train, select by valid MSE, ensemble over seeds.
     Returns list of dense beta arrays [T,N] for (train, valid, test).
     """
+    from .model import TFAdam
     tr, va, te = splits
     X = [torch.tensor(s.I[s.mask], device=device) for s in splits]
     Y = [torch.tensor((s.R * F[:, None] * scale)[s.mask], device=device, dtype=torch.float32)
@@ -127,17 +132,16 @@ def fit_beta(splits, F_by_split, epochs=2048, lr=1e-3, seeds=(0,), device='cuda'
     preds = [np.zeros((s.T, s.N)) for s in splits]
     for seed in seeds:
         torch.manual_seed(seed)
-        net = BetaNet(tr.C).to(device); opt = torch.optim.Adam(net.parameters(), lr=lr)
+        net = BetaNet(tr.C).to(device); opt = TFAdam(net.parameters(), lr=lr)
         best, best_sd = float('inf'), None
         for ep in range(epochs):
             net.train(); loss = ((net(X[0]) - Y[0]) ** 2).mean()
             opt.zero_grad(); loss.backward(); opt.step()
-            if ep % 16 == 0:
-                net.eval()
-                with torch.no_grad():
-                    lv = ((net(X[1]) - Y[1]) ** 2).mean().item()
-                if lv < best:
-                    best, best_sd = lv, copy.deepcopy(net.state_dict())
+            net.eval()                                   # authors check the validation loss after every epoch
+            with torch.no_grad():
+                lv = ((net(X[1]) - Y[1]) ** 2).mean().item()
+            if lv < best:
+                best, best_sd = lv, copy.deepcopy(net.state_dict())
         net.load_state_dict(best_sd); net.eval()
         with torch.no_grad():
             for k, s in enumerate(splits):

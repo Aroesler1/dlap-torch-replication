@@ -1,0 +1,1 @@
+Results of the first full run (commit f9a02cc), BEFORE the fidelity fixes of 2026-09-10: PyTorch default init, one shared Adam for stages 1+3, torch.optim.Adam epsilon placement, adversary 64 steps without dropout, ignore_epoch 64, beta-net valid check every 16 epochs. Kept for the before/after comparison in notes.md.

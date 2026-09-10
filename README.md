@@ -80,11 +80,17 @@ EN 0.50/0.04/0.19; LS 0.42/0.03/0.14. Train SR of GAN 2.68, valid 1.43.
    train → valid → test by running the LSTM over the concatenated macro history (identical to their `getNextInitialState`).
 2. **Hyper-parameter search.** The paper fits 384 configurations × validation selection × 4 finalists × 9 seeds. We take their
    reported optimum (Table I) and run 9 seeds — same architecture, one tenth of the compute.
-3. **Adversary noise.** In stage 3 the authors re-run the (frozen) adversary every step with dropout active; we compute the
-   adversarial moments once without dropout. Only the LSTM input of a 0-layer network is affected.
-4. **Beta network.** Kept as a separate second stage exactly as in `create_RF_data.py` (target `R·F·50`, FFN [32,16,8], 2048 epochs).
-   EV / XS-R² are reported both from the beta network (paper) and from projecting on w directly.
-5. **Extensions are opt-in flags** (`turnover_penalty`, `sdf_hinge`), so `configs/gan.json` is a pure replication.
+3. **Beta network.** Kept as a separate second stage exactly as in `create_RF_data.py` + `config_RF/config_RF_1.json`
+   (target `R·F·50`, FFN [32,16,8], keep 0.95, 2048 single-step epochs, best-valid-MSE checkpoint, 9 trials averaged).
+   EV / XS-R² are reported both from the beta network (paper) and from projecting on w directly. The paper's XS-R² is the
+   T_i-weighted one (the authors' notebook prints `WXSR2`), which `summarize.py` puts first.
+4. **Extensions are opt-in flags** (`turnover_penalty`, `sdf_hinge`), so `configs/gan.json` is a pure replication.
+
+Everything else is matched to the TF graph after a line-by-line audit (see `notes.md`): TF-default initialisation
+(Glorot-uniform kernels, zero biases, LSTM forget bias 1), a `tf.train.AdamOptimizer`-exact update with a fresh optimizer
+per stage, dropout kept active on the frozen network during both adversarial stages, the adversary's 4 × 64 steps with the
+running-max reset of the authors' loop, `ignoreEpoch = 32` from the authors' notebook command, and the 9-model finite-difference
+variable importance with delta 1e-6.
 
 ## 4. Extensions implemented
 

@@ -11,9 +11,55 @@ Extensions (all OFF by default, i.e. plain replication):
     turnover_penalty  : + lambda * mean_t sum_i |w~_{t,i} - w~_{t-1,i}|  (w~ = L1-normalised weights)
     sdf_hinge         : + lambda * mean_t max(0, -M_t)^2   (admissibility: SDF should be positive)
 """
+import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+
+def init_tf_default_(module):
+    """Re-initialise exactly like TensorFlow 1.12 defaults, which the authors rely on:
+       tf.layers.Dense  -> glorot_uniform kernel, zero bias
+       LSTMCell         -> glorot_uniform over the single [input+hidden, 4*hidden] kernel, zero bias, forget_bias = 1.0
+    (PyTorch defaults are U(+-1/sqrt(fan_in)) for weights *and* biases and no forget-gate bias.)"""
+    for m in module.modules():
+        if isinstance(m, nn.Linear):
+            nn.init.xavier_uniform_(m.weight); nn.init.zeros_(m.bias)
+        elif isinstance(m, nn.LSTM):
+            H = m.hidden_size
+            for layer in range(m.num_layers):
+                w_ih = getattr(m, f'weight_ih_l{layer}'); w_hh = getattr(m, f'weight_hh_l{layer}')
+                limit = math.sqrt(6.0 / ((w_ih.shape[1] + H) + 4 * H))      # fan_in = input + hidden, fan_out = 4 * hidden
+                nn.init.uniform_(w_ih, -limit, limit); nn.init.uniform_(w_hh, -limit, limit)
+                nn.init.zeros_(getattr(m, f'bias_ih_l{layer}')); nn.init.zeros_(getattr(m, f'bias_hh_l{layer}'))
+                with torch.no_grad():
+                    getattr(m, f'bias_ih_l{layer}')[H:2 * H].fill_(1.0)   # forget gate (PyTorch gate order: i, f, g, o)
+    return module
+
+
+class TFAdam(torch.optim.Optimizer):
+    """tf.train.AdamOptimizer (used through tf.contrib.layers.optimize_loss in the authors' code):
+         m = b1 m + (1-b1) g;  v = b2 v + (1-b2) g^2;  lr_t = lr sqrt(1-b2^t)/(1-b1^t);  p -= lr_t m / (sqrt(v) + eps)
+       torch.optim.Adam differs only in where eps enters (eps is effectively scaled by sqrt(1-b2^t))."""
+
+    def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8):
+        super().__init__(params, dict(lr=lr, betas=betas, eps=eps))
+
+    @torch.no_grad()
+    def step(self, closure=None):
+        for g in self.param_groups:
+            b1, b2 = g['betas']
+            for p in g['params']:
+                if p.grad is None:
+                    continue
+                st = self.state[p]
+                if not st:
+                    st['t'] = 0; st['m'] = torch.zeros_like(p); st['v'] = torch.zeros_like(p)
+                st['t'] += 1; t = st['t']
+                st['m'].mul_(b1).add_(p.grad, alpha=1 - b1)
+                st['v'].mul_(b2).addcmul_(p.grad, p.grad, value=1 - b2)
+                lr_t = g['lr'] * math.sqrt(1 - b2 ** t) / (1 - b1 ** t)
+                p.addcdiv_(st['m'], st['v'].sqrt().add_(g['eps']), value=-lr_t)
 
 
 def _mlp(in_dim, hidden, out_dim, out_act=None):
@@ -54,6 +100,7 @@ class SDFNet(nn.Module):
             state_dim = self.K
         self.ffn = _mlp(self.C + state_dim, cfg['hidden_dim'][:cfg['num_layers']], 1)
         self.drop_p = 1.0 - cfg.get('dropout', 1.0)      # authors store *keep* prob
+        init_tf_default_(self)
 
     def macro_state(self, macro_seq):
         if self.K == 0:
@@ -114,6 +161,7 @@ class MomentNet(nn.Module):
         self.ffn = _mlp(self.C + state_dim, cfg.get('hidden_dim_moment', [])[:cfg.get('num_layers_moment', 0)],
                         self.D, out_act=nn.Tanh())
         self.drop_p = 1.0 - cfg.get('dropout', 1.0)
+        init_tf_default_(self)
 
     def forward(self, I, mask, macro_seq, t0):
         T, N, _ = I.shape

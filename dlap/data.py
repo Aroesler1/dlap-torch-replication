@@ -51,7 +51,7 @@ class Split:
             self.macro_mean, self.macro_std = None, None
         else:
             tm = np.load(macro_path, allow_pickle=True)
-            md = tm['data'].astype(np.float32)
+            md = np.asarray(tm['data'], dtype=np.float64)   # authors standardise in float64 and feed float32 placeholders
             names = [str(v) for v in tm['variable']]
             if macro_idx is None or macro_idx == 'all':
                 idx = np.arange(md.shape[1])
@@ -65,7 +65,7 @@ class Split:
                 macro_mean, macro_std = md.mean(0), md.std(0)
                 macro_std = np.where(macro_std == 0, 1.0, macro_std)
             self.macro_mean, self.macro_std = macro_mean, macro_std
-            self.M = (md - macro_mean) / macro_std
+            self.M = ((md - macro_mean) / macro_std).astype(np.float32)
         self.K = self.M.shape[1]
 
     # --- helpers used by the loss --------------------------------------------------------

@@ -1,8 +1,0 @@
-Stage 1: unconditional loss
-[UNC] ep    0/64  loss tr/va/te 2.947e-02/5.920e-02/2.321e-02  SR(monthly) tr/va/te -0.151/-0.126/0.047        2s
-[UNC] ep   32/64  loss tr/va/te 2.506e-03/7.350e-03/2.931e-03  SR(monthly) tr/va/te 0.876/0.818/0.873       37s
-[UNC] ep   63/64  loss tr/va/te 2.221e-03/7.381e-03/3.072e-03  SR(monthly) tr/va/te 0.896/0.773/0.827       71s
-Stage 2: updating moment conditions (adversary)
-   adversary conditional loss 8.019e-04  (unconditional was 6.834e-03)
-Stage 3: conditional (GAN) loss
-[GAN] ep    0/128  loss tr/va/te 2.729e-03/7.152e-03/2.810e-03  SR(monthly) tr/va/te 0.909/0.858/0.947        1s

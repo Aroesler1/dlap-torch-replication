@@ -5,17 +5,23 @@ Three-stage adversarial training, exactly as in the authors' `train()`:
            keep checkpoint with best validation loss ("loss") and best validation Sharpe ("sharpe").
   Stage 2  (num_epochs_moment, default 64): freeze SDF net (from best-loss ckpt), train the adversary
            to MAXIMISE the conditional loss; keep the adversary that achieved the largest loss.
+           As in the authors' loop, the 64 steps are repeated once per sub-epoch (4x) and the running
+           maximum is reset at the start of each pass; the frozen SDF net is re-evaluated every step
+           with dropout active (the authors feed keep_prob 0.95 to the whole graph).
   Stage 3  (num_epochs, default 1024): freeze adversary, retrain SDF net on the conditional loss;
+           the frozen adversary is re-evaluated every step with dropout active, exactly as in TF;
            again keep best-valid-loss and best-valid-Sharpe checkpoints.
 
 Each "epoch" = `sub_epoch` (default 4) full-batch Adam steps on the training window, then evaluation.
+Each stage gets its own fresh tf.train.AdamOptimizer-equivalent (`TFAdam`), as in the authors' three
+separate `optimize_loss` ops.
 The authors' notebook ensembles the *best-valid-Sharpe* checkpoint of each of 9 seeds.
 """
 import os, time, json, copy
 import numpy as np
 import torch
 
-from .model import SDFNet, MomentNet, pricing_loss, turnover_penalty, sdf_hinge
+from .model import SDFNet, MomentNet, TFAdam, pricing_loss, turnover_penalty, sdf_hinge
 from .evaluate import sharpe_monthly
 
 
@@ -62,12 +68,13 @@ def train_one(cfg, bundles, logdir, seed=0, log=print, device='cuda'):
     lam_to = cfg.get('turnover_penalty', 0.0)
     lam_pos = cfg.get('sdf_hinge', 0.0)
     sub = cfg.get('sub_epoch', 4) or 1
-    ignore = cfg.get('ignore_epoch', 64)
+    ignore = cfg.get('ignore_epoch', 32)
 
     sdf = SDFNet(cfg).to(device)
     adv = MomentNet(cfg).to(device)
-    opt_sdf = torch.optim.Adam(sdf.parameters(), lr=cfg['learning_rate'])
-    opt_adv = torch.optim.Adam(adv.parameters(), lr=cfg['learning_rate'])
+    opt_unc = TFAdam(sdf.parameters(), lr=cfg['learning_rate'])     # authors: _train_model_op_unc
+    opt_adv = TFAdam(adv.parameters(), lr=cfg['learning_rate'])     # authors: _update_moment_op
+    opt_cond = TFAdam(sdf.parameters(), lr=cfg['learning_rate'])    # authors: _train_model_op (fresh Adam state)
 
     hist = {'stage': [], 'epoch': [], 'loss_tr': [], 'loss_va': [], 'loss_te': [], 'sr_tr': [], 'sr_va': [], 'sr_te': []}
     best = {'loss': (float('inf'), None), 'sharpe': (float('-inf'), None)}
@@ -104,28 +111,33 @@ def train_one(cfg, bundles, logdir, seed=0, log=print, device='cuda'):
     t0 = time.time(); log('Stage 1: unconditional loss')
     for ep in range(cfg['num_epochs_unc']):
         for _ in range(sub):
-            _step(opt_sdf, sdf_loss(None))
+            _step(opt_unc, sdf_loss(None))
         record('UNC', ep, t0, cfg['num_epochs_unc'])
 
     # ---------------- Stage 2: adversary ----------------
     log('Stage 2: updating moment conditions (adversary)')
     sdf.load_state_dict(best['loss'][1] if best['loss'][1] is not None else sdf.state_dict())
-    sdf.eval()
-    with torch.no_grad():
-        state = sdf.macro_state(btr.macro_seq)
-        _, _, M_fixed = sdf(btr.I, btr.R, btr.mask, state, btr.t0)
     best_adv, best_adv_loss = copy.deepcopy(adv.state_dict()), float('-inf')
-    for ep in range(cfg['num_epochs_moment']):
-        adv.train()
-        G = adv(btr.I, btr.mask, btr.macro_seq, btr.t0)
-        loss = pricing_loss(M_fixed, btr.R, btr.mask, G, btr.T_i, weighted)
-        _step(opt_adv, -loss)
-        if loss.item() > best_adv_loss:
-            best_adv_loss, best_adv = loss.item(), copy.deepcopy(adv.state_dict())
-    adv.load_state_dict(best_adv); adv.eval()
-    with torch.no_grad():
-        G_fixed = adv(btr.I, btr.mask, btr.macro_seq, btr.t0).detach()
+    for _ in range(sub):                       # authors: `for ... in iterateOneEpoch(subEpoch=4): best = -inf; for epoch in range(64): ...`
+        best_adv_loss = float('-inf')
+        for ep in range(cfg['num_epochs_moment']):
+            sdf.train(); adv.train()           # keep_prob 0.95 is fed to the whole graph during this stage
+            with torch.no_grad():
+                state = sdf.macro_state(btr.macro_seq)
+                _, _, M_drop = sdf(btr.I, btr.R, btr.mask, state, btr.t0)
+            G = adv(btr.I, btr.mask, btr.macro_seq, btr.t0)
+            loss = pricing_loss(M_drop, btr.R, btr.mask, G, btr.T_i, weighted)
+            _step(opt_adv, -loss)
+            if loss.item() > best_adv_loss:    # TF fetches the pre-update loss and saves the post-update variables
+                best_adv_loss, best_adv = loss.item(), copy.deepcopy(adv.state_dict())
+    adv.load_state_dict(best_adv)
     log(f'   adversary conditional loss {best_adv_loss:.3e}  (unconditional was {best["loss"][0]:.3e})')
+
+    def adversary_moments():
+        """frozen adversary, re-evaluated every step with its LSTM-input dropout active (authors feed keep_prob 0.95)"""
+        adv.train()
+        with torch.no_grad():
+            return adv(btr.I, btr.mask, btr.macro_seq, btr.t0)
 
     # ---------------- Stage 3: conditional ----------------
     if cfg['num_epochs'] > 0:   # fresh selection for stage 3, as in authors' code (UNC ablation keeps stage-1 best)
@@ -133,7 +145,7 @@ def train_one(cfg, bundles, logdir, seed=0, log=print, device='cuda'):
     t0 = time.time(); log('Stage 3: conditional (GAN) loss')
     for ep in range(cfg['num_epochs']):
         for _ in range(sub):
-            _step(opt_sdf, sdf_loss(G_fixed))
+            _step(opt_cond, sdf_loss(adversary_moments()))
         record('GAN', ep, t0, cfg['num_epochs'])
 
     torch.save({'cfg': cfg, 'seed': seed,

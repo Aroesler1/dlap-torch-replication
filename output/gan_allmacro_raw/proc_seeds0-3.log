@@ -1,140 +1,140 @@
 ==========================================================================================
-2026-09-10 04:08:26  config: {"learning_rate": 0.001, "optimizer": "Adam", "dropout": 0.95, "weighted_loss": true, "use_rnn": false, "cell_type_rnn": "lstm", "num_layers_rnn": 1, "num_units_rnn": [4], "num_layers": 2, "hidden_dim": [64, 64], "cell_type_rnn_moment": "lstm", "num_layers_rnn_moment": 1, "num_units_rnn_moment": [32], "num_layers_moment": 0, "hidden_dim_moment": [], "num_condition_moment": 8, "num_epochs_unc": 256, "num_epochs_moment": 64, "num_epochs": 1024, "sub_epoch": 4, "individual_feature_dim": 46, "macro_feature_dim": 178, "ignore_epoch": 64, "print_freq": 64, "turnover_penalty": 0.0, "sdf_hinge": 0.0, "individual_feature_file": "datasets/char/Char_train.npz", "individual_feature_file_valid": "datasets/char/Char_valid.npz", "individual_feature_file_test": "datasets/char/Char_test.npz", "macro_feature_file": "datasets/macro/macro_train.npz", "macro_feature_file_valid": "datasets/macro/macro_valid.npz", "macro_feature_file_test": "datasets/macro/macro_test.npz"}
+2026-09-10 04:55:43  config: {"learning_rate": 0.001, "optimizer": "Adam", "dropout": 0.95, "weighted_loss": true, "use_rnn": false, "cell_type_rnn": "lstm", "num_layers_rnn": 1, "num_units_rnn": [4], "num_layers": 2, "hidden_dim": [64, 64], "cell_type_rnn_moment": "lstm", "num_layers_rnn_moment": 1, "num_units_rnn_moment": [32], "num_layers_moment": 0, "hidden_dim_moment": [], "num_condition_moment": 8, "num_epochs_unc": 256, "num_epochs_moment": 64, "num_epochs": 1024, "sub_epoch": 4, "individual_feature_dim": 46, "macro_feature_dim": 178, "ignore_epoch": 32, "print_freq": 64, "turnover_penalty": 0.0, "sdf_hinge": 0.0, "individual_feature_file": "datasets/char/Char_train.npz", "individual_feature_file_valid": "datasets/char/Char_valid.npz", "individual_feature_file_test": "datasets/char/Char_test.npz", "macro_feature_file": "datasets/macro/macro_train.npz", "macro_feature_file_valid": "datasets/macro/macro_valid.npz", "macro_feature_file_test": "datasets/macro/macro_test.npz"}
 train  T= 240 months (196701–198612)  N=  3686 permnos  obs=  336113  avg stocks/month= 1400.5  chars=46  macro=178
 valid  T=  60 months (198701–199112)  N=  3347 permnos  obs=  132167  avg stocks/month= 2202.8  chars=46  macro=178
 test   T= 300 months (199201–201612)  N=  7141 permnos  obs=  750275  avg stocks/month= 2500.9  chars=46  macro=178
 
 ##### seed 0 #####
 Stage 1: unconditional loss
-[UNC] ep    0/256  loss tr/va/te 2.084e-03/3.749e-02/2.478e-01  SR(monthly) tr/va/te 0.160/0.070/-0.057        1s
-[UNC] ep   64/256  loss tr/va/te 1.372e-05/2.209e-02/7.023e-02  SR(monthly) tr/va/te 1.119/-0.018/-0.067        8s
-[UNC] ep  128/256  loss tr/va/te 1.117e-05/2.146e-02/6.926e-02  SR(monthly) tr/va/te 1.788/-0.004/-0.067       18s
-[UNC] ep  192/256  loss tr/va/te 7.687e-06/2.025e-02/6.503e-02  SR(monthly) tr/va/te 2.295/0.006/-0.070       27s
-[UNC] ep  255/256  loss tr/va/te 4.242e-06/1.775e-02/6.077e-02  SR(monthly) tr/va/te 2.683/0.014/-0.073       36s
+[UNC] ep    0/256  loss tr/va/te 2.493e-01/2.003e+00/4.505e+00  SR(monthly) tr/va/te 0.041/0.161/0.039        1s
+[UNC] ep   64/256  loss tr/va/te 7.859e-04/7.188e-01/4.448e+00  SR(monthly) tr/va/te 0.140/0.004/0.023        7s
+[UNC] ep  128/256  loss tr/va/te 4.767e-04/6.863e-01/4.313e+00  SR(monthly) tr/va/te 0.331/-0.002/0.023       16s
+[UNC] ep  192/256  loss tr/va/te 6.098e-04/6.740e-01/4.406e+00  SR(monthly) tr/va/te 0.445/-0.004/0.021       25s
+[UNC] ep  255/256  loss tr/va/te 3.833e-04/6.539e-01/4.384e+00  SR(monthly) tr/va/te 0.494/-0.010/0.019       34s
 Stage 2: updating moment conditions (adversary)
-   adversary conditional loss 1.410e-05  (unconditional was 1.706e-02)
+   adversary conditional loss 8.015e-04  (unconditional was 6.355e-01)
 Stage 3: conditional (GAN) loss
-[GAN] ep    0/1024  loss tr/va/te 4.684e-06/1.801e-02/6.178e-02  SR(monthly) tr/va/te 2.730/0.016/-0.073        0s
-[GAN] ep   64/1024  loss tr/va/te 6.560e-06/1.746e-02/6.015e-02  SR(monthly) tr/va/te 2.948/0.019/-0.074       10s
-[GAN] ep  128/1024  loss tr/va/te 4.298e-06/1.683e-02/5.866e-02  SR(monthly) tr/va/te 3.134/0.024/-0.075       19s
-[GAN] ep  192/1024  loss tr/va/te 6.962e-06/1.660e-02/5.723e-02  SR(monthly) tr/va/te 3.280/0.025/-0.077       29s
-[GAN] ep  256/1024  loss tr/va/te 4.268e-06/1.648e-02/5.535e-02  SR(monthly) tr/va/te 3.501/0.028/-0.078       39s
-[GAN] ep  320/1024  loss tr/va/te 8.803e-06/1.566e-02/5.257e-02  SR(monthly) tr/va/te 3.345/0.031/-0.079       48s
-[GAN] ep  384/1024  loss tr/va/te 4.221e-06/1.507e-02/5.012e-02  SR(monthly) tr/va/te 3.737/0.037/-0.077       58s
-[GAN] ep  448/1024  loss tr/va/te 5.069e-06/1.438e-02/4.890e-02  SR(monthly) tr/va/te 3.662/0.047/-0.078       68s
-[GAN] ep  512/1024  loss tr/va/te 2.784e-06/1.385e-02/4.659e-02  SR(monthly) tr/va/te 4.139/0.059/-0.077       77s
-[GAN] ep  576/1024  loss tr/va/te 5.835e-06/1.284e-02/4.279e-02  SR(monthly) tr/va/te 4.004/0.066/-0.078       87s
-[GAN] ep  640/1024  loss tr/va/te 3.013e-06/1.214e-02/4.129e-02  SR(monthly) tr/va/te 4.190/0.078/-0.076       97s
-[GAN] ep  704/1024  loss tr/va/te 1.946e-06/1.137e-02/4.016e-02  SR(monthly) tr/va/te 4.557/0.088/-0.076      106s
-[GAN] ep  768/1024  loss tr/va/te 2.679e-06/9.795e-03/3.804e-02  SR(monthly) tr/va/te 4.451/0.100/-0.076      116s
-[GAN] ep  832/1024  loss tr/va/te 3.876e-06/9.224e-03/3.702e-02  SR(monthly) tr/va/te 4.313/0.111/-0.072      126s
-[GAN] ep  896/1024  loss tr/va/te 5.059e-06/8.057e-03/3.349e-02  SR(monthly) tr/va/te 4.528/0.118/-0.073      135s
-[GAN] ep  960/1024  loss tr/va/te 9.631e-06/7.297e-03/3.175e-02  SR(monthly) tr/va/te 4.440/0.131/-0.073      145s
-[GAN] ep 1023/1024  loss tr/va/te 6.565e-06/6.560e-03/2.991e-02  SR(monthly) tr/va/te 4.608/0.147/-0.073      154s
-best-valid-Sharpe epoch 1014: SR(monthly) tr/va/te = 5.025/0.150/-0.071
-seed 0 done in 193s
+[GAN] ep    0/1024  loss tr/va/te 3.003e-01/6.925e-01/8.550e+00  SR(monthly) tr/va/te 0.138/0.048/0.029        0s
+[GAN] ep   64/1024  loss tr/va/te 5.081e-04/7.094e-01/3.804e+00  SR(monthly) tr/va/te 0.537/-0.046/0.021       12s
+[GAN] ep  128/1024  loss tr/va/te 1.012e-03/6.550e-01/3.891e+00  SR(monthly) tr/va/te 0.572/-0.045/0.020       24s
+[GAN] ep  192/1024  loss tr/va/te 3.351e-04/6.304e-01/3.665e+00  SR(monthly) tr/va/te 0.709/-0.050/0.019       37s
+[GAN] ep  256/1024  loss tr/va/te 1.315e-03/5.886e-01/3.652e+00  SR(monthly) tr/va/te 0.728/-0.049/0.021       49s
+[GAN] ep  320/1024  loss tr/va/te 2.159e-04/5.564e-01/3.353e+00  SR(monthly) tr/va/te 0.768/-0.059/0.020       61s
+[GAN] ep  384/1024  loss tr/va/te 1.765e-03/5.075e-01/3.183e+00  SR(monthly) tr/va/te 0.688/-0.061/0.022       73s
+[GAN] ep  448/1024  loss tr/va/te 2.046e-04/5.008e-01/2.829e+00  SR(monthly) tr/va/te 0.898/-0.074/0.023       86s
+[GAN] ep  512/1024  loss tr/va/te 2.765e-04/4.666e-01/2.750e+00  SR(monthly) tr/va/te 0.905/-0.084/0.024       98s
+[GAN] ep  576/1024  loss tr/va/te 1.026e-04/4.315e-01/2.498e+00  SR(monthly) tr/va/te 1.005/-0.098/0.025      110s
+[GAN] ep  640/1024  loss tr/va/te 5.948e-04/3.969e-01/2.480e+00  SR(monthly) tr/va/te 0.923/-0.106/0.029      122s
+[GAN] ep  704/1024  loss tr/va/te 1.181e-03/3.797e-01/2.383e+00  SR(monthly) tr/va/te 0.887/-0.111/0.031      134s
+[GAN] ep  768/1024  loss tr/va/te 2.273e-04/3.482e-01/2.114e+00  SR(monthly) tr/va/te 1.088/-0.138/0.032      147s
+[GAN] ep  832/1024  loss tr/va/te 2.490e-04/3.274e-01/2.017e+00  SR(monthly) tr/va/te 1.102/-0.143/0.035      159s
+[GAN] ep  896/1024  loss tr/va/te 1.994e-04/3.176e-01/1.889e+00  SR(monthly) tr/va/te 1.063/-0.158/0.036      171s
+[GAN] ep  960/1024  loss tr/va/te 2.156e-04/2.762e-01/1.828e+00  SR(monthly) tr/va/te 1.179/-0.165/0.038      184s
+[GAN] ep 1023/1024  loss tr/va/te 7.014e-04/2.628e-01/1.754e+00  SR(monthly) tr/va/te 1.078/-0.170/0.039      196s
+best-valid-Sharpe epoch 0: SR(monthly) tr/va/te = 0.138/0.048/0.029
+seed 0 done in 240s
 
 ##### seed 1 #####
 Stage 1: unconditional loss
-[UNC] ep    0/256  loss tr/va/te 6.489e-02/2.997e-02/1.350e-01  SR(monthly) tr/va/te 0.045/0.003/0.129        0s
-[UNC] ep   64/256  loss tr/va/te 5.950e-05/1.157e-02/4.355e-02  SR(monthly) tr/va/te 0.451/-0.257/0.154       10s
-[UNC] ep  128/256  loss tr/va/te 5.179e-05/8.074e-03/3.621e-02  SR(monthly) tr/va/te 0.930/-0.244/0.158       19s
-[UNC] ep  192/256  loss tr/va/te 2.444e-05/7.120e-03/3.142e-02  SR(monthly) tr/va/te 1.332/-0.228/0.159       29s
-[UNC] ep  255/256  loss tr/va/te 2.033e-05/6.502e-03/2.874e-02  SR(monthly) tr/va/te 1.645/-0.219/0.160       38s
+[UNC] ep    0/256  loss tr/va/te 3.122e-01/7.221e+00/5.923e+00  SR(monthly) tr/va/te -0.079/-0.060/-0.004        0s
+[UNC] ep   64/256  loss tr/va/te 1.654e-03/5.875e+00/1.898e+00  SR(monthly) tr/va/te -0.055/0.019/0.018        9s
+[UNC] ep  128/256  loss tr/va/te 1.828e-03/5.817e+00/1.764e+00  SR(monthly) tr/va/te 0.067/0.024/0.012       18s
+[UNC] ep  192/256  loss tr/va/te 1.940e-03/5.234e+00/1.592e+00  SR(monthly) tr/va/te 0.212/0.028/0.010       27s
+[UNC] ep  255/256  loss tr/va/te 8.604e-04/4.835e+00/1.504e+00  SR(monthly) tr/va/te 0.303/0.031/0.001       36s
 Stage 2: updating moment conditions (adversary)
-   adversary conditional loss 2.380e-05  (unconditional was 6.208e-03)
+   adversary conditional loss 1.654e-03  (unconditional was 4.746e+00)
 Stage 3: conditional (GAN) loss
-[GAN] ep    0/1024  loss tr/va/te 1.439e-05/6.657e-03/2.907e-02  SR(monthly) tr/va/te 1.667/-0.217/0.160        0s
-[GAN] ep   64/1024  loss tr/va/te 2.861e-05/6.235e-03/2.720e-02  SR(monthly) tr/va/te 1.860/-0.225/0.162       10s
-[GAN] ep  128/1024  loss tr/va/te 4.243e-05/5.901e-03/2.579e-02  SR(monthly) tr/va/te 1.991/-0.226/0.162       20s
-[GAN] ep  192/1024  loss tr/va/te 3.416e-05/5.919e-03/2.514e-02  SR(monthly) tr/va/te 2.167/-0.228/0.162       29s
-[GAN] ep  256/1024  loss tr/va/te 4.956e-05/5.658e-03/2.380e-02  SR(monthly) tr/va/te 2.184/-0.231/0.163       39s
-[GAN] ep  320/1024  loss tr/va/te 2.798e-05/5.886e-03/2.357e-02  SR(monthly) tr/va/te 2.382/-0.234/0.162       49s
-[GAN] ep  384/1024  loss tr/va/te 3.853e-05/5.694e-03/2.268e-02  SR(monthly) tr/va/te 2.419/-0.233/0.162       58s
-[GAN] ep  448/1024  loss tr/va/te 1.970e-05/5.803e-03/2.233e-02  SR(monthly) tr/va/te 2.681/-0.233/0.162       68s
-[GAN] ep  512/1024  loss tr/va/te 2.802e-05/5.634e-03/2.155e-02  SR(monthly) tr/va/te 2.730/-0.230/0.162       77s
-[GAN] ep  576/1024  loss tr/va/te 2.027e-05/5.401e-03/2.086e-02  SR(monthly) tr/va/te 2.757/-0.227/0.162       87s
-[GAN] ep  640/1024  loss tr/va/te 1.325e-05/5.297e-03/2.018e-02  SR(monthly) tr/va/te 3.008/-0.225/0.162       97s
-[GAN] ep  704/1024  loss tr/va/te 1.303e-05/5.098e-03/1.993e-02  SR(monthly) tr/va/te 3.076/-0.229/0.160      110s
-[GAN] ep  768/1024  loss tr/va/te 2.410e-05/4.876e-03/1.872e-02  SR(monthly) tr/va/te 2.873/-0.226/0.160      123s
-[GAN] ep  832/1024  loss tr/va/te 1.598e-05/4.570e-03/1.827e-02  SR(monthly) tr/va/te 3.086/-0.234/0.157      136s
-[GAN] ep  896/1024  loss tr/va/te 3.550e-05/3.891e-03/1.693e-02  SR(monthly) tr/va/te 3.058/-0.217/0.157      147s
-[GAN] ep  960/1024  loss tr/va/te 3.236e-05/3.774e-03/1.711e-02  SR(monthly) tr/va/te 3.158/-0.204/0.157      155s
-[GAN] ep 1023/1024  loss tr/va/te 2.744e-05/3.612e-03/1.614e-02  SR(monthly) tr/va/te 3.282/-0.200/0.157      163s
-best-valid-Sharpe epoch 1019: SR(monthly) tr/va/te = 3.326/-0.193/0.156
-seed 1 done in 203s
+[GAN] ep    0/1024  loss tr/va/te 3.367e-01/2.916e+00/1.529e+00  SR(monthly) tr/va/te 0.106/0.074/0.043        0s
+[GAN] ep   64/1024  loss tr/va/te 3.109e-04/4.410e+00/1.308e+00  SR(monthly) tr/va/te 0.320/0.035/-0.023       12s
+[GAN] ep  128/1024  loss tr/va/te 3.091e-04/4.034e+00/1.278e+00  SR(monthly) tr/va/te 0.462/0.041/-0.023       25s
+[GAN] ep  192/1024  loss tr/va/te 7.188e-04/3.676e+00/1.263e+00  SR(monthly) tr/va/te 0.616/0.048/-0.027       37s
+[GAN] ep  256/1024  loss tr/va/te 3.388e-04/3.333e+00/1.267e+00  SR(monthly) tr/va/te 0.528/0.047/-0.031       49s
+[GAN] ep  320/1024  loss tr/va/te 6.677e-04/3.044e+00/1.165e+00  SR(monthly) tr/va/te 0.632/0.053/-0.034       62s
+[GAN] ep  384/1024  loss tr/va/te 8.806e-04/2.790e+00/1.087e+00  SR(monthly) tr/va/te 0.649/0.059/-0.035       76s
+[GAN] ep  448/1024  loss tr/va/te 6.852e-04/2.514e+00/1.038e+00  SR(monthly) tr/va/te 0.694/0.061/-0.038       90s
+[GAN] ep  512/1024  loss tr/va/te 4.710e-04/2.339e+00/9.905e-01  SR(monthly) tr/va/te 0.842/0.067/-0.041      104s
+[GAN] ep  576/1024  loss tr/va/te 1.840e-04/2.274e+00/1.008e+00  SR(monthly) tr/va/te 0.770/0.071/-0.046      118s
+[GAN] ep  640/1024  loss tr/va/te 4.190e-04/1.995e+00/8.999e-01  SR(monthly) tr/va/te 0.785/0.077/-0.044      132s
+[GAN] ep  704/1024  loss tr/va/te 3.575e-04/1.857e+00/8.776e-01  SR(monthly) tr/va/te 0.809/0.080/-0.045      146s
+[GAN] ep  768/1024  loss tr/va/te 4.238e-04/1.705e+00/8.297e-01  SR(monthly) tr/va/te 0.920/0.087/-0.048      157s
+[GAN] ep  832/1024  loss tr/va/te 4.768e-04/1.578e+00/8.158e-01  SR(monthly) tr/va/te 0.932/0.093/-0.051      168s
+[GAN] ep  896/1024  loss tr/va/te 1.531e-04/1.457e+00/8.184e-01  SR(monthly) tr/va/te 0.936/0.097/-0.051      178s
+[GAN] ep  960/1024  loss tr/va/te 1.177e-03/1.234e+00/7.412e-01  SR(monthly) tr/va/te 0.842/0.108/-0.047      189s
+[GAN] ep 1023/1024  loss tr/va/te 1.832e-04/1.171e+00/7.268e-01  SR(monthly) tr/va/te 1.041/0.105/-0.052      199s
+best-valid-Sharpe epoch 1011: SR(monthly) tr/va/te = 0.904/0.113/-0.047
+seed 1 done in 244s
 
 ##### seed 2 #####
 Stage 1: unconditional loss
-[UNC] ep    0/256  loss tr/va/te 5.704e-02/3.053e-02/3.737e-01  SR(monthly) tr/va/te -0.036/-0.036/0.029        0s
-[UNC] ep   64/256  loss tr/va/te 3.274e-05/3.540e-02/1.625e-01  SR(monthly) tr/va/te 0.546/0.150/0.066        8s
-[UNC] ep  128/256  loss tr/va/te 1.443e-05/2.853e-02/1.556e-01  SR(monthly) tr/va/te 1.011/0.157/0.063       16s
-[UNC] ep  192/256  loss tr/va/te 1.094e-05/2.636e-02/1.459e-01  SR(monthly) tr/va/te 1.423/0.152/0.062       25s
-[UNC] ep  255/256  loss tr/va/te 1.000e-05/2.571e-02/1.358e-01  SR(monthly) tr/va/te 1.782/0.148/0.063       33s
+[UNC] ep    0/256  loss tr/va/te 3.374e-01/1.077e+01/2.064e+01  SR(monthly) tr/va/te 0.024/-0.080/-0.013        0s
+[UNC] ep   64/256  loss tr/va/te 1.094e-03/3.918e+00/3.663e+00  SR(monthly) tr/va/te 0.153/-0.086/-0.028        8s
+[UNC] ep  128/256  loss tr/va/te 6.085e-04/3.692e+00/3.266e+00  SR(monthly) tr/va/te 0.263/-0.079/-0.027       16s
+[UNC] ep  192/256  loss tr/va/te 7.495e-04/3.756e+00/3.333e+00  SR(monthly) tr/va/te 0.447/-0.069/-0.023       23s
+[UNC] ep  255/256  loss tr/va/te 2.658e-03/3.444e+00/2.699e+00  SR(monthly) tr/va/te 0.333/-0.079/-0.031       31s
 Stage 2: updating moment conditions (adversary)
-   adversary conditional loss 2.256e-05  (unconditional was 2.541e-02)
+   adversary conditional loss 3.767e-03  (unconditional was 3.339e+00)
 Stage 3: conditional (GAN) loss
-[GAN] ep    0/1024  loss tr/va/te 1.056e-05/2.581e-02/1.407e-01  SR(monthly) tr/va/te 1.623/0.152/0.062        0s
-[GAN] ep   64/1024  loss tr/va/te 7.228e-06/2.679e-02/1.321e-01  SR(monthly) tr/va/te 1.906/0.150/0.066        8s
-[GAN] ep  128/1024  loss tr/va/te 1.089e-05/2.722e-02/1.241e-01  SR(monthly) tr/va/te 2.156/0.148/0.068       17s
-[GAN] ep  192/1024  loss tr/va/te 7.802e-06/2.681e-02/1.196e-01  SR(monthly) tr/va/te 2.358/0.147/0.069       28s
-[GAN] ep  256/1024  loss tr/va/te 6.379e-06/2.578e-02/1.189e-01  SR(monthly) tr/va/te 2.438/0.143/0.068       38s
-[GAN] ep  320/1024  loss tr/va/te 5.826e-06/2.642e-02/1.122e-01  SR(monthly) tr/va/te 2.712/0.145/0.069       46s
-[GAN] ep  384/1024  loss tr/va/te 5.305e-06/2.573e-02/1.115e-01  SR(monthly) tr/va/te 2.802/0.143/0.068       54s
-[GAN] ep  448/1024  loss tr/va/te 8.957e-06/2.613e-02/1.082e-01  SR(monthly) tr/va/te 2.943/0.144/0.069       61s
-[GAN] ep  512/1024  loss tr/va/te 4.856e-06/2.547e-02/1.081e-01  SR(monthly) tr/va/te 3.171/0.142/0.069       69s
-[GAN] ep  576/1024  loss tr/va/te 3.236e-06/2.494e-02/1.080e-01  SR(monthly) tr/va/te 3.295/0.142/0.069       76s
-[GAN] ep  640/1024  loss tr/va/te 8.582e-06/2.495e-02/1.086e-01  SR(monthly) tr/va/te 3.348/0.142/0.069       84s
-[GAN] ep  704/1024  loss tr/va/te 1.565e-05/2.460e-02/1.093e-01  SR(monthly) tr/va/te 3.402/0.142/0.068       92s
-[GAN] ep  768/1024  loss tr/va/te 5.694e-06/2.382e-02/1.096e-01  SR(monthly) tr/va/te 3.733/0.141/0.068       99s
-[GAN] ep  832/1024  loss tr/va/te 4.991e-06/2.301e-02/1.117e-01  SR(monthly) tr/va/te 3.833/0.138/0.067      107s
-[GAN] ep  896/1024  loss tr/va/te 2.805e-06/2.150e-02/1.158e-01  SR(monthly) tr/va/te 3.797/0.136/0.066      115s
-[GAN] ep  960/1024  loss tr/va/te 7.723e-06/2.131e-02/1.129e-01  SR(monthly) tr/va/te 3.891/0.141/0.067      122s
-[GAN] ep 1023/1024  loss tr/va/te 2.104e-06/2.057e-02/1.139e-01  SR(monthly) tr/va/te 4.232/0.142/0.067      131s
-best-valid-Sharpe epoch 3: SR(monthly) tr/va/te = 1.599/0.154/0.064
-seed 2 done in 165s
+[GAN] ep    0/1024  loss tr/va/te 3.220e-01/2.163e+00/1.117e+00  SR(monthly) tr/va/te -0.039/-0.137/-0.068        0s
+[GAN] ep   64/1024  loss tr/va/te 4.831e-04/3.268e+00/2.659e+00  SR(monthly) tr/va/te 0.490/-0.066/-0.037       11s
+[GAN] ep  128/1024  loss tr/va/te 2.259e-04/3.263e+00/2.627e+00  SR(monthly) tr/va/te 0.560/-0.062/-0.040       23s
+[GAN] ep  192/1024  loss tr/va/te 1.614e-04/3.176e+00/2.514e+00  SR(monthly) tr/va/te 0.623/-0.061/-0.042       35s
+[GAN] ep  256/1024  loss tr/va/te 5.216e-04/2.999e+00/2.366e+00  SR(monthly) tr/va/te 0.609/-0.063/-0.048       46s
+[GAN] ep  320/1024  loss tr/va/te 1.049e-03/2.808e+00/2.163e+00  SR(monthly) tr/va/te 0.589/-0.063/-0.049       58s
+[GAN] ep  384/1024  loss tr/va/te 6.011e-04/2.786e+00/2.011e+00  SR(monthly) tr/va/te 0.731/-0.060/-0.050       69s
+[GAN] ep  448/1024  loss tr/va/te 2.648e-04/2.661e+00/1.935e+00  SR(monthly) tr/va/te 0.743/-0.060/-0.051       78s
+[GAN] ep  512/1024  loss tr/va/te 3.711e-04/2.465e+00/1.814e+00  SR(monthly) tr/va/te 0.758/-0.056/-0.053       88s
+[GAN] ep  576/1024  loss tr/va/te 2.724e-04/2.348e+00/1.608e+00  SR(monthly) tr/va/te 0.811/-0.058/-0.055       97s
+[GAN] ep  640/1024  loss tr/va/te 1.363e-04/2.306e+00/1.462e+00  SR(monthly) tr/va/te 0.874/-0.058/-0.057      107s
+[GAN] ep  704/1024  loss tr/va/te 1.756e-04/2.218e+00/1.452e+00  SR(monthly) tr/va/te 0.990/-0.055/-0.059      116s
+[GAN] ep  768/1024  loss tr/va/te 1.702e-04/2.133e+00/1.363e+00  SR(monthly) tr/va/te 0.961/-0.057/-0.059      126s
+[GAN] ep  832/1024  loss tr/va/te 1.046e-04/1.919e+00/1.241e+00  SR(monthly) tr/va/te 0.970/-0.054/-0.062      135s
+[GAN] ep  896/1024  loss tr/va/te 8.783e-05/1.848e+00/1.143e+00  SR(monthly) tr/va/te 1.025/-0.052/-0.064      145s
+[GAN] ep  960/1024  loss tr/va/te 1.979e-04/1.727e+00/1.018e+00  SR(monthly) tr/va/te 1.047/-0.055/-0.066      155s
+[GAN] ep 1023/1024  loss tr/va/te 5.448e-05/1.708e+00/9.977e-01  SR(monthly) tr/va/te 1.375/-0.054/-0.064      165s
+best-valid-Sharpe epoch 1: SR(monthly) tr/va/te = 0.207/-0.045/-0.022
+seed 2 done in 203s
 
 ##### seed 3 #####
 Stage 1: unconditional loss
-[UNC] ep    0/256  loss tr/va/te 5.626e-02/8.178e-02/2.303e-01  SR(monthly) tr/va/te -0.042/-0.149/-0.055        0s
-[UNC] ep   64/256  loss tr/va/te 3.560e-05/2.469e-02/1.009e-01  SR(monthly) tr/va/te 0.491/-0.087/-0.046        9s
-[UNC] ep  128/256  loss tr/va/te 1.697e-05/2.202e-02/1.048e-01  SR(monthly) tr/va/te 1.046/-0.094/-0.040       17s
-[UNC] ep  192/256  loss tr/va/te 9.186e-06/2.260e-02/1.087e-01  SR(monthly) tr/va/te 1.513/-0.099/-0.038       24s
-[UNC] ep  255/256  loss tr/va/te 6.225e-06/2.376e-02/1.103e-01  SR(monthly) tr/va/te 1.898/-0.098/-0.035       31s
+[UNC] ep    0/256  loss tr/va/te 9.332e-01/4.831e+00/8.958e+00  SR(monthly) tr/va/te 0.042/-0.034/0.131        0s
+[UNC] ep   64/256  loss tr/va/te 2.330e-03/1.387e+00/3.164e+00  SR(monthly) tr/va/te 0.022/-0.070/0.132        8s
+[UNC] ep  128/256  loss tr/va/te 1.623e-03/1.214e+00/2.970e+00  SR(monthly) tr/va/te 0.078/-0.078/0.129       15s
+[UNC] ep  192/256  loss tr/va/te 1.443e-03/1.060e+00/2.892e+00  SR(monthly) tr/va/te 0.145/-0.078/0.125       23s
+[UNC] ep  255/256  loss tr/va/te 2.083e-03/9.421e-01/2.766e+00  SR(monthly) tr/va/te 0.192/-0.079/0.123       31s
 Stage 2: updating moment conditions (adversary)
-   adversary conditional loss 4.384e-05  (unconditional was 2.166e-02)
+   adversary conditional loss 1.677e-03  (unconditional was 9.421e-01)
 Stage 3: conditional (GAN) loss
-[GAN] ep    0/1024  loss tr/va/te 1.889e-05/2.253e-02/1.008e-01  SR(monthly) tr/va/te 1.048/-0.085/-0.040        0s
-[GAN] ep   64/1024  loss tr/va/te 1.097e-05/2.409e-02/1.087e-01  SR(monthly) tr/va/te 1.604/-0.087/-0.035        7s
-[GAN] ep  128/1024  loss tr/va/te 8.144e-06/2.418e-02/1.105e-01  SR(monthly) tr/va/te 1.990/-0.091/-0.034       14s
-[GAN] ep  192/1024  loss tr/va/te 5.623e-06/2.421e-02/1.103e-01  SR(monthly) tr/va/te 2.305/-0.093/-0.034       21s
-[GAN] ep  256/1024  loss tr/va/te 7.007e-06/2.447e-02/1.111e-01  SR(monthly) tr/va/te 2.479/-0.093/-0.033       27s
-[GAN] ep  320/1024  loss tr/va/te 5.028e-06/2.524e-02/1.074e-01  SR(monthly) tr/va/te 2.747/-0.090/-0.032       34s
-[GAN] ep  384/1024  loss tr/va/te 4.275e-06/2.534e-02/1.053e-01  SR(monthly) tr/va/te 2.898/-0.089/-0.032       41s
-[GAN] ep  448/1024  loss tr/va/te 4.578e-06/2.535e-02/1.054e-01  SR(monthly) tr/va/te 2.997/-0.086/-0.032       48s
-[GAN] ep  512/1024  loss tr/va/te 5.361e-06/2.511e-02/1.039e-01  SR(monthly) tr/va/te 3.003/-0.085/-0.031       55s
-[GAN] ep  576/1024  loss tr/va/te 6.800e-06/2.524e-02/1.015e-01  SR(monthly) tr/va/te 3.123/-0.082/-0.031       62s
-[GAN] ep  640/1024  loss tr/va/te 3.185e-06/2.514e-02/9.711e-02  SR(monthly) tr/va/te 3.382/-0.075/-0.030       68s
-[GAN] ep  704/1024  loss tr/va/te 3.605e-06/2.470e-02/9.457e-02  SR(monthly) tr/va/te 3.431/-0.070/-0.029       75s
-[GAN] ep  768/1024  loss tr/va/te 4.183e-06/2.411e-02/9.138e-02  SR(monthly) tr/va/te 3.715/-0.061/-0.028       82s
-[GAN] ep  832/1024  loss tr/va/te 2.974e-06/2.310e-02/8.995e-02  SR(monthly) tr/va/te 3.676/-0.056/-0.027       89s
-[GAN] ep  896/1024  loss tr/va/te 3.098e-06/2.311e-02/8.652e-02  SR(monthly) tr/va/te 3.758/-0.049/-0.026       95s
-[GAN] ep  960/1024  loss tr/va/te 4.600e-06/2.261e-02/8.164e-02  SR(monthly) tr/va/te 3.958/-0.039/-0.024      102s
-[GAN] ep 1023/1024  loss tr/va/te 2.982e-06/2.169e-02/8.067e-02  SR(monthly) tr/va/te 4.077/-0.039/-0.024      109s
-best-valid-Sharpe epoch 999: SR(monthly) tr/va/te = 3.971/-0.034/-0.023
-seed 3 done in 141s
+[GAN] ep    0/1024  loss tr/va/te 2.313e-01/5.173e-01/1.005e+00  SR(monthly) tr/va/te -0.028/-0.110/0.106        0s
+[GAN] ep   64/1024  loss tr/va/te 1.080e-03/6.774e-01/2.258e+00  SR(monthly) tr/va/te 0.384/-0.050/0.130       11s
+[GAN] ep  128/1024  loss tr/va/te 7.880e-04/5.851e-01/1.796e+00  SR(monthly) tr/va/te 0.520/-0.040/0.131       19s
+[GAN] ep  192/1024  loss tr/va/te 4.357e-04/5.312e-01/1.692e+00  SR(monthly) tr/va/te 0.569/-0.018/0.135       28s
+[GAN] ep  256/1024  loss tr/va/te 2.975e-04/4.796e-01/1.480e+00  SR(monthly) tr/va/te 0.554/-0.008/0.135       36s
+[GAN] ep  320/1024  loss tr/va/te 6.856e-04/4.302e-01/1.282e+00  SR(monthly) tr/va/te 0.582/0.008/0.137       45s
+[GAN] ep  384/1024  loss tr/va/te 2.465e-04/4.198e-01/1.212e+00  SR(monthly) tr/va/te 0.738/0.017/0.139       53s
+[GAN] ep  448/1024  loss tr/va/te 5.827e-04/3.822e-01/1.050e+00  SR(monthly) tr/va/te 0.691/0.021/0.137       62s
+[GAN] ep  512/1024  loss tr/va/te 2.719e-04/3.578e-01/9.393e-01  SR(monthly) tr/va/te 0.790/0.034/0.140       71s
+[GAN] ep  576/1024  loss tr/va/te 1.017e-04/3.644e-01/8.740e-01  SR(monthly) tr/va/te 0.828/0.041/0.141       79s
+[GAN] ep  640/1024  loss tr/va/te 9.470e-05/3.407e-01/7.796e-01  SR(monthly) tr/va/te 1.034/0.052/0.145       88s
+[GAN] ep  704/1024  loss tr/va/te 1.044e-04/2.998e-01/7.017e-01  SR(monthly) tr/va/te 1.009/0.063/0.143       96s
+[GAN] ep  768/1024  loss tr/va/te 1.681e-04/2.925e-01/6.628e-01  SR(monthly) tr/va/te 1.210/0.082/0.143      105s
+[GAN] ep  832/1024  loss tr/va/te 1.539e-04/2.570e-01/6.170e-01  SR(monthly) tr/va/te 1.209/0.090/0.142      113s
+[GAN] ep  896/1024  loss tr/va/te 1.339e-04/2.168e-01/5.343e-01  SR(monthly) tr/va/te 1.270/0.090/0.137      122s
+[GAN] ep  960/1024  loss tr/va/te 8.308e-05/2.052e-01/4.907e-01  SR(monthly) tr/va/te 1.356/0.092/0.135      130s
+[GAN] ep 1023/1024  loss tr/va/te 1.142e-04/1.922e-01/4.324e-01  SR(monthly) tr/va/te 1.331/0.096/0.129      139s
+best-valid-Sharpe epoch 1021: SR(monthly) tr/va/te = 1.377/0.101/0.130
+seed 3 done in 177s
 
 ##### ensemble evaluation #####
-train  SR monthly 1.617  annual 5.60  EV 0.087  XS-R2 0.045  turnover 0.94  net SR@50bps 4.83
-valid  SR monthly 0.034  annual 0.12  EV 0.049  XS-R2 0.048  turnover 0.84  net SR@50bps -0.21
-test   SR monthly 0.135  annual 0.47  EV 0.063  XS-R2 0.052  turnover 0.86  net SR@50bps 0.15
+train  SR monthly 1.029  annual 3.56  EV 0.038  XS-R2 0.056  turnover 1.16  net SR@50bps 2.58
+valid  SR monthly 0.019  annual 0.07  EV 0.098  XS-R2 0.067  turnover 1.22  net SR@50bps -0.29
+test   SR monthly 0.068  annual 0.23  EV 0.077  XS-R2 0.063  turnover 1.13  net SR@50bps -0.14
 fitting beta network on SDF factor ...
-   beta net seed 0: best valid MSE 0.2969
-   beta net seed 1: best valid MSE 0.3010
-   beta net seed 2: best valid MSE 0.3029
-   beta net seed 3: best valid MSE 0.3042
-train  beta-net  EV 0.244  XS-R2 0.054  weighted XS-R2 0.243  decile spread 2.44%/mo
-valid  beta-net  EV 0.125  XS-R2 0.066  weighted XS-R2 0.072  decile spread 2.23%/mo
-test   beta-net  EV 0.105  XS-R2 0.062  weighted XS-R2 0.266  decile spread 2.13%/mo
+   beta net seed 0: best valid MSE 0.5307
+   beta net seed 1: best valid MSE 0.5304
+   beta net seed 2: best valid MSE 0.5307
+   beta net seed 3: best valid MSE 0.5304
+train  beta-net  EV 0.265  XS-R2 0.052  weighted XS-R2 0.244  decile spread 1.90%/mo
+valid  beta-net  EV 0.135  XS-R2 0.073  weighted XS-R2 0.071  decile spread 1.92%/mo
+test   beta-net  EV 0.117  XS-R2 0.063  weighted XS-R2 0.279  decile spread 1.94%/mo
 
 results written to output/gan_allmacro_raw/results.json

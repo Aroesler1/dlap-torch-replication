@@ -1,0 +1,146 @@
+{
+ "ours": {
+  "Population": [
+   0.9644558380864232,
+   0.9158646753696649,
+   1.018951018804946,
+   0.17069348864790368,
+   0.14888064761393838,
+   0.16670812167255178,
+   0.13532648433731076,
+   0.11509519310963201,
+   0.13049438725345908
+  ],
+  "GAN": [
+   1.0477697941749573,
+   0.87665767480481,
+   0.9831533655629451,
+   0.17072905425923923,
+   0.14835342379846717,
+   0.16581137423840564,
+   0.13448995936648622,
+   0.11967016072166248,
+   0.12234930389982068
+  ],
+  "GAN (w as loading)": [
+   1.0477697941749573,
+   0.87665767480481,
+   0.9831533655629451,
+   0.0353771906016378,
+   0.03256331144538693,
+   0.03529900477403791,
+   -0.8581454042108663,
+   -0.12266789423839075,
+   -0.7219539159765729
+  ],
+  "FFN": [
+   0.9698259751996673,
+   0.9155191255425825,
+   1.0213161568149898,
+   0.17085074368165254,
+   0.14822425015511487,
+   0.16573109110765327,
+   0.13433241489733905,
+   0.1154992392752483,
+   0.12515659850406746
+  ],
+  "LS": [
+   0.12079368735861007,
+   0.03958302395751847,
+   -0.08508317355509867,
+   0.0028960961765769344,
+   0.0022921260414405786,
+   0.002592890336291176,
+   0.0072195035417437214,
+   0.008877955324672504,
+   -0.0011914862369277746
+  ]
+ },
+ "paper": {
+  "Population": [
+   0.96,
+   1.09,
+   0.94,
+   0.16,
+   0.15,
+   0.17,
+   0.17,
+   0.15,
+   0.17
+  ],
+  "GAN": [
+   0.98,
+   1.11,
+   0.94,
+   0.12,
+   0.11,
+   0.13,
+   0.1,
+   0.09,
+   0.07
+  ],
+  "FFN": [
+   0.94,
+   1.04,
+   0.89,
+   0.05,
+   0.04,
+   0.05,
+   -0.3,
+   -0.09,
+   -0.33
+  ],
+  "LS": [
+   0.07,
+   -0.1,
+   0.01,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.01,
+   0.01
+  ]
+ },
+ "cfg": {
+  "learning_rate": 0.001,
+  "optimizer": "Adam",
+  "dropout": 0.95,
+  "weighted_loss": true,
+  "use_rnn": true,
+  "cell_type_rnn": "lstm",
+  "num_layers_rnn": 1,
+  "num_units_rnn": [
+   4
+  ],
+  "num_layers": 2,
+  "hidden_dim": [
+   64,
+   64
+  ],
+  "cell_type_rnn_moment": "lstm",
+  "num_layers_rnn_moment": 1,
+  "num_units_rnn_moment": [
+   32
+  ],
+  "num_layers_moment": 0,
+  "hidden_dim_moment": [],
+  "num_condition_moment": 8,
+  "num_epochs_unc": 256,
+  "num_epochs_moment": 64,
+  "num_epochs": 1024,
+  "sub_epoch": 4,
+  "individual_feature_dim": 2,
+  "macro_feature_dim": 0,
+  "ignore_epoch": 64,
+  "print_freq": 128,
+  "turnover_penalty": 0.0,
+  "sdf_hinge": 0.0,
+  "individual_feature_file": "datasets_sim1/char/Char_train.npz",
+  "individual_feature_file_valid": "datasets_sim1/char/Char_valid.npz",
+  "individual_feature_file_test": "datasets_sim1/char/Char_test.npz",
+  "macro_feature_file": "datasets_sim1/macro/macro_train.npz",
+  "macro_feature_file_valid": "datasets_sim1/macro/macro_valid.npz",
+  "macro_feature_file_test": "datasets_sim1/macro/macro_test.npz"
+ }
+}
