@@ -1,0 +1,13 @@
+# raw CRSP-derived data (licensed, 1.2 GB) and the Google-Drive download
+datasets/
+drive-download-*/
+# environment and caches
+.venv/
+__pycache__/
+*.pyc
+# regenerable synthetic / simulation inputs (simulate.py and run.py --synthetic rebuild them)
+datasets_synthetic/
+datasets_sim1/
+datasets_sim2/
+# process bookkeeping
+fleet_pids.json

@@ -1,0 +1,11 @@
+{
+ "individual_feature_file": "datasets/char/Char_train.npz",
+ "individual_feature_file_valid": "datasets/char/Char_valid.npz",
+ "individual_feature_file_test": "datasets/char/Char_test.npz",
+ "macro_feature_file": "datasets/macro/macro_train.npz",
+ "macro_feature_file_valid": "datasets/macro/macro_valid.npz",
+ "macro_feature_file_test": "datasets/macro/macro_test.npz",
+ "macro_feature_dim": 178,
+ "individual_feature_dim": 46,
+ "sdf_hinge": 1.0
+}

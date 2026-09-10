@@ -1,0 +1,32 @@
+==========================================================================================
+2026-09-10 04:07:04  config: {"learning_rate": 0.001, "optimizer": "Adam", "dropout": 0.95, "weighted_loss": true, "use_rnn": true, "cell_type_rnn": "lstm", "num_layers_rnn": 1, "num_units_rnn": [4], "num_layers": 2, "hidden_dim": [64, 64], "cell_type_rnn_moment": "lstm", "num_layers_rnn_moment": 1, "num_units_rnn_moment": [32], "num_layers_moment": 0, "hidden_dim_moment": [], "num_condition_moment": 8, "num_epochs_unc": 64, "num_epochs_moment": 32, "num_epochs": 256, "sub_epoch": 4, "individual_feature_dim": 46, "macro_feature_dim": 178, "ignore_epoch": 16, "print_freq": 64, "turnover_penalty": 0.0, "sdf_hinge": 0.0, "individual_feature_file": "datasets/char/Char_train.npz", "individual_feature_file_valid": "datasets/char/Char_valid.npz", "individual_feature_file_test": "datasets/char/Char_test.npz", "macro_feature_file": "datasets/macro/macro_train.npz", "macro_feature_file_valid": "datasets/macro/macro_valid.npz", "macro_feature_file_test": "datasets/macro/macro_test.npz"}
+train  T= 240 months (196701–198612)  N=  3686 permnos  obs=  336113  avg stocks/month= 1400.5  chars=46  macro=178
+valid  T=  60 months (198701–199112)  N=  3347 permnos  obs=  132167  avg stocks/month= 2202.8  chars=46  macro=178
+test   T= 300 months (199201–201612)  N=  7141 permnos  obs=  750275  avg stocks/month= 2500.9  chars=46  macro=178
+
+##### seed 0 #####
+Stage 1: unconditional loss
+[UNC] ep    0/64  loss tr/va/te 1.435e-03/7.282e-03/3.147e-03  SR(monthly) tr/va/te 0.054/-0.037/-0.066        0s
+[UNC] ep   63/64  loss tr/va/te 3.872e-05/5.782e-04/8.050e-04  SR(monthly) tr/va/te 0.636/0.392/0.245        2s
+Stage 2: updating moment conditions (adversary)
+   adversary conditional loss 2.513e-05  (unconditional was 4.947e-04)
+Stage 3: conditional (GAN) loss
+[GAN] ep    0/256  loss tr/va/te 6.756e-05/4.984e-04/2.159e-04  SR(monthly) tr/va/te 0.387/0.262/0.294        0s
+[GAN] ep   64/256  loss tr/va/te 6.043e-05/1.036e-03/8.299e-04  SR(monthly) tr/va/te 0.539/0.316/0.194        2s
+[GAN] ep  128/256  loss tr/va/te 4.735e-05/8.733e-04/1.014e-03  SR(monthly) tr/va/te 0.641/0.404/0.226        3s
+[GAN] ep  192/256  loss tr/va/te 4.323e-05/8.944e-04/1.288e-03  SR(monthly) tr/va/te 0.727/0.447/0.234        5s
+[GAN] ep  255/256  loss tr/va/te 3.440e-05/7.519e-04/1.279e-03  SR(monthly) tr/va/te 0.814/0.528/0.271        6s
+best-valid-Sharpe epoch 255: SR(monthly) tr/va/te = 0.814/0.528/0.271
+seed 0 done in 9s
+
+##### ensemble evaluation #####
+train  SR monthly 0.835  annual 2.89  EV 0.016  XS-R2 0.039  turnover 0.56  net SR@50bps 2.27
+valid  SR monthly 0.517  annual 1.79  EV 0.007  XS-R2 0.014  turnover 0.54  net SR@50bps 1.18
+test   SR monthly 0.282  annual 0.98  EV 0.010  XS-R2 0.007  turnover 0.55  net SR@50bps 0.51
+fitting beta network on SDF factor ...
+   beta net seed 0: best valid MSE 0.0377
+train  beta-net  EV 0.116  XS-R2 0.021  weighted XS-R2 0.181  decile spread 3.02%/mo
+valid  beta-net  EV 0.058  XS-R2 0.040  weighted XS-R2 0.035  decile spread 1.83%/mo
+test   beta-net  EV 0.042  XS-R2 0.044  weighted XS-R2 0.209  decile spread 2.18%/mo
+
+results written to output/quick/results.json
